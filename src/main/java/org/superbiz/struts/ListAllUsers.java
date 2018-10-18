@@ -17,6 +17,8 @@
  */
 package org.superbiz.struts;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import java.util.List;
@@ -24,9 +26,15 @@ import java.util.Properties;
 
 public class ListAllUsers {
 
+    private UserService userService;
+
     private int id;
     private String errorMessage;
     private List<User> users;
+
+    public ListAllUsers(UserService userService) {
+        this.userService = userService;
+    }
 
     public List<User> getUsers() {
         return users;
@@ -52,20 +60,22 @@ public class ListAllUsers {
         this.id = id;
     }
 
+    @Transactional
     public String execute() {
 
-        try {
-            UserService service = null;
-            Properties props = new Properties();
-            props.put(Context.INITIAL_CONTEXT_FACTORY,
-                "org.apache.openejb.core.LocalInitialContextFactory");
-            Context ctx = new InitialContext(props);
-            service = (UserService) ctx.lookup("UserServiceImplLocal");
-            this.users = service.findAll();
-        } catch (Exception e) {
-            this.errorMessage = e.getMessage();
-            return "failure";
-        }
+//        try {
+//            UserService service = null;
+//            Properties props = new Properties();
+//            props.put(Context.INITIAL_CONTEXT_FACTORY,
+//                "org.apache.openejb.core.LocalInitialContextFactory");
+//            Context ctx = new InitialContext(props);
+//            service = (UserService) ctx.lookup("UserServiceImplLocal");
+//            this.users = service.findAll();
+//        } catch (Exception e) {
+//            this.errorMessage = e.getMessage();
+//            return "failure";
+//        }
+        this.users = userService.findAll();
 
         return "success";
     }
